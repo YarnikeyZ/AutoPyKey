@@ -7,8 +7,8 @@ It was originally conceived to automate the creation of accounts for twitch drop
 
 ## Usage
 1. Always edit the `run.bat` file after installation or update according to the help message from running `AutoPyKey.py`
-   ![image](https://github.com/user-attachments/assets/e52d6151-bc7c-41a6-8057-7b508e03d1a6)
-2. Install or update the libraries with `python -m pip install pyautogui pynput keyboard`
+   ![image](https://github.com/user-attachments/assets/227bd351-a955-4221-946e-70ce97ae9a15)
+2. Install or update the libraries with `python -m pip install pynput`
 3. When running the record modes you need to know these controls:
    * `[Record] start/end` - means the record process has started/ended;
    * `[Step] start/end` - means the step process has started/ended;
@@ -21,9 +21,9 @@ It was originally conceived to automate the creation of accounts for twitch drop
      * pressing `6` - adding _pressing ctrl+v_ to the step;
    * Pressing `space` is ending the choosing of the parameters, saving the position of the cursor and ending the step;
    * Pressubg `esc` does the same but also ends the record process.
-4. When running other modes you don't need to do anything other than running the `run.bat` file.
+4. When running play modes you can exit the playing sequence by pressing `esc`.
 
 ## Bonus usage
-When running in `rW` mode it writes the script to a file instead of running it, but when running in `Rp` mode it reads the script file and plays it.
+When running in `rW` mode it writes the script to a file instead of running it, but when running in `Rp` or `RpL` modes it reads the script file and plays it.
 
-But instead of running exitsting file as is you can change it, the syntax is easy: `stepid|pointX,pointY|globalTimeInSeconds|toClick,toWriteLogin,toWritePassword,toCopy,toPaste`.
+But instead of running exitsting file as is you can change it, the syntax is easy: `stepid|pointX,pointY|timeDiffInSeconds|toClickLeft,toClickRight,toWriteLogin,toWritePassword,toCopy,toPaste`.
