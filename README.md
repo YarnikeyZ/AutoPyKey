@@ -13,11 +13,12 @@ It was originally conceived to automate the creation of accounts for twitch drop
    * `[Record] start/end` - means the record process has started/ended;
    * `[Step] start/end` - means the step process has started/ended;
    * When the record and step is running you can change the parameters of the step wich include:
-     * pressing `1` - adding _a click_ to the step;
-     * pressing `2` - adding _writing a login_ to the step;
-     * pressing `3` - adding _writing a password_ to the step;
-     * pressing `4` - adding _pressing ctrl+c_ to the step;
-     * pressing `5` - adding _pressing ctrl+v_ to the step;
+     * pressing `1` - adding _a left click_ to the step;
+     * pressing `2` - adding _a right click_ to the step;
+     * pressing `3` - adding _writing a login_ to the step;
+     * pressing `4` - adding _writing a password_ to the step;
+     * pressing `5` - adding _pressing ctrl+c_ to the step;
+     * pressing `6` - adding _pressing ctrl+v_ to the step;
    * Pressing `space` is ending the choosing of the parameters, saving the position of the cursor and ending the step;
    * Pressubg `esc` does the same but also ends the record process.
 4. When running other modes you don't need to do anything other than running the `run.bat` file.
