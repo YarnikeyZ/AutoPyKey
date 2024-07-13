@@ -15,11 +15,13 @@ steps = []
 
 class step:
     def __init__(self, stepid:int, point:pyautogui.Point = pyautogui.Point(0,0), time:float = 0,
-                 toClick:bool = False, toWrite1:bool = False, toWrite2:bool = False, toCopy:bool = False, toPaste:bool = False):
+                 toClickLeft:bool = False, toClickRight:bool = False, toWrite1:bool = False, toWrite2:bool = False,
+                 toCopy:bool = False, toPaste:bool = False):
         self.point = point
         self.stepid = stepid
         self.time = time
-        self.toClick = toClick
+        self.toClickLeft = toClickLeft
+        self.toClickRight = toClickRight
         self.toWrite1 = toWrite1
         self.toWrite2 = toWrite2
         self.toCopy = toCopy
@@ -27,8 +29,11 @@ class step:
     
     def run(self, previous):
         global intline
-        if (self.toClick):
-            pyautogui.click(self.point.x, self.point.y)
+        pyautogui.moveTo(self.point.x, self.point.y,)
+        if (self.toClickLeft):
+            pyautogui.click(button='left')
+        if (self.toClickRight):
+            pyautogui.click(button='right')
         if (self.toWrite1):
             kb.write(loginPasswordLines[intline][0])
         if (self.toWrite2):
@@ -45,7 +50,7 @@ class step:
         else: time.sleep(self.time - previous.time)
 
     def __str__(self) -> str:
-        return f"{str(self.stepid).rjust(2, " ")}|{str(self.point.x).rjust(5, " ")},{str(self.point.y).rjust(5, " ")}|{str(self.time).rjust(18, " ")}|{'1' if self.toClick else '0'},{'1' if self.toWrite1 else '0'},{'1' if self.toWrite2 else '0'},{'1' if self.toCopy else '0'},{'1' if self.toPaste else '0'}"
+        return f"{str(self.stepid).rjust(2, " ")}|{str(self.point.x).rjust(5, " ")},{str(self.point.y).rjust(5, " ")}|{str(self.time).rjust(18, " ")}|{'1' if self.toClickLeft else '0'},{'1' if self.toClickRight else '0'},{'1' if self.toWrite1 else '0'},{'1' if self.toWrite2 else '0'},{'1' if self.toCopy else '0'},{'1' if self.toPaste else '0'}"
 
 thisstep = step(0)
 
@@ -75,14 +80,16 @@ def record():
             steps.append(thisstep)
             stepend = True
         if (key == pkb.KeyCode.from_char('1')):
-            thisstep.toClick = True
+            thisstep.toClickLeft = True
         if (key == pkb.KeyCode.from_char('2')):
+            thisstep.toClickRight = True
+        if (key == pkb.KeyCode.from_char('3')):
             thisstep.toWrite1 = True
-        if (key == pkb.KeyCode.from_char('3')): 
+        if (key == pkb.KeyCode.from_char('4')): 
             thisstep.toWrite2 = True
-        if (key == pkb.KeyCode.from_char('4')):
-            thisstep.toCopy = True
         if (key == pkb.KeyCode.from_char('5')):
+            thisstep.toCopy = True
+        if (key == pkb.KeyCode.from_char('6')):
             thisstep.toPaste = True
         return False
 
@@ -134,7 +141,8 @@ def scriptRead():
                     bool(int(stepparams[1])),
                     bool(int(stepparams[2])),
                     bool(int(stepparams[3])),
-                    bool(int(stepparams[4]))
+                    bool(int(stepparams[4])),
+                    bool(int(stepparams[5]))
                 ))
     print("[Read] end")
 
