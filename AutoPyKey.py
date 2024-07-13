@@ -1,9 +1,5 @@
-import time
-import sys as sus
-
-import pyautogui
-from pynput import keyboard as pkb
-import keyboard as kb
+import time, os, sys
+import pynput
 
 loginPasswordPath = ""
 scriptPath = ""
@@ -12,9 +8,11 @@ intline = 0
 recordrun = True
 stepend = False
 steps = []
+mouse = pynput.mouse.Controller()
+keyboard = pynput.keyboard.Controller()
 
 class step:
-    def __init__(self, stepid:int, point:pyautogui.Point = pyautogui.Point(0,0), time:float = 0,
+    def __init__(self, stepid:int = 0, point = (0,0), time:float = 0,
                  toClickLeft:bool = False, toClickRight:bool = False, toWrite1:bool = False, toWrite2:bool = False,
                  toCopy:bool = False, toPaste:bool = False):
         self.point = point
@@ -27,36 +25,40 @@ class step:
         self.toCopy = toCopy
         self.toPaste = toPaste
     
-    def run(self, previous):
+    def run(self):
         global intline
-        pyautogui.moveTo(self.point.x, self.point.y,)
+        mouse.position = (self.point[0], self.point[1])
         if (self.toClickLeft):
-            pyautogui.click(button='left')
+            mouse.click(pynput.mouse.Button.left, 2)
         if (self.toClickRight):
-            pyautogui.click(button='right')
+            mouse.click(pynput.mouse.Button.right, 2)
         if (self.toWrite1):
-            kb.write(loginPasswordLines[intline][0])
+            keyboard.type(loginPasswordLines[intline][0])
         if (self.toWrite2):
-            kb.write(loginPasswordLines[intline][1])
+            keyboard.type(loginPasswordLines[intline][1])
             intline += 1
         if (self.toCopy):
-            with pyautogui.hold('ctrl'):
-                pyautogui.press('c')
+            keyboard.press(pynput.keyboard.Key.ctrl)
+            keyboard.press('c')
+            keyboard.release(pynput.keyboard.Key.ctrl)
+            keyboard.release('c')
         if (self.toPaste):
-            with pyautogui.hold('ctrl'):
-                pyautogui.press('v')
+            keyboard.press(pynput.keyboard.Key.ctrl)
+            keyboard.press('v')
+            keyboard.release(pynput.keyboard.Key.ctrl)
+            keyboard.release('v')
         
         if (self.stepid == 0): time.sleep(1)
-        else: time.sleep(self.time - previous.time)
+        else: time.sleep(self.time)
 
     def __str__(self) -> str:
-        return f"{str(self.stepid).rjust(2, " ")}|{str(self.point.x).rjust(5, " ")},{str(self.point.y).rjust(5, " ")}|{str(self.time).rjust(18, " ")}|{'1' if self.toClickLeft else '0'},{'1' if self.toClickRight else '0'},{'1' if self.toWrite1 else '0'},{'1' if self.toWrite2 else '0'},{'1' if self.toCopy else '0'},{'1' if self.toPaste else '0'}"
+        return f"{str(self.stepid).rjust(2, " ")}|{str(self.point[0]).rjust(5, " ")},{str(self.point[1]).rjust(5, " ")}|{str(round(self.time, 3)).rjust(5, " ")}|{'1' if self.toClickLeft else '0'},{'1' if self.toClickRight else '0'},{'1' if self.toWrite1 else '0'},{'1' if self.toWrite2 else '0'},{'1' if self.toCopy else '0'},{'1' if self.toPaste else '0'}"
 
-thisstep = step(0)
+thisstep = step()
 
 def readLoginPasswordFile():
     global loginPasswordPath, loginPasswordLines
-    with open(loginPasswordPath) as file:
+    with open(loginPasswordPath, 'r', encoding='utf-8') as file:
         line = "fill"
         while (line != ""):
             line = file.readline()
@@ -68,64 +70,73 @@ def record():
     global recordrun, stepend, thisstep
     def on_press(key):
         global recordrun, stepend, thisstep
-        if (key == pkb.Key.esc):
-            thisstep.point = pyautogui.position()
-            thisstep.time = time.time()
+        if (key == pynput.keyboard.Key.esc):
+            thisstep.point = mouse.position
             steps.append(thisstep)
             stepend = True
             recordrun = False
-        if (key == pkb.Key.space):
-            thisstep.point = pyautogui.position()
-            thisstep.time = time.time()
+        if (key == pynput.keyboard.Key.space):
+            thisstep.point = mouse.position
             steps.append(thisstep)
             stepend = True
-        if (key == pkb.KeyCode.from_char('1')):
+        if (key == pynput.keyboard.KeyCode.from_char('1')):
             thisstep.toClickLeft = True
-        if (key == pkb.KeyCode.from_char('2')):
+        if (key == pynput.keyboard.KeyCode.from_char('2')):
             thisstep.toClickRight = True
-        if (key == pkb.KeyCode.from_char('3')):
+        if (key == pynput.keyboard.KeyCode.from_char('3')):
             thisstep.toWrite1 = True
-        if (key == pkb.KeyCode.from_char('4')): 
+        if (key == pynput.keyboard.KeyCode.from_char('4')): 
             thisstep.toWrite2 = True
-        if (key == pkb.KeyCode.from_char('5')):
+        if (key == pynput.keyboard.KeyCode.from_char('5')):
             thisstep.toCopy = True
-        if (key == pkb.KeyCode.from_char('6')):
+        if (key == pynput.keyboard.KeyCode.from_char('6')):
             thisstep.toPaste = True
         return False
 
     recordrun = True
     stepend = False
     stepid = 0
-    print("[Record] start1 ")
+    time.sleep(5)
+    print("[Record] start")
     while (recordrun):
         print("[Step] start")
+        stepStartTime = time.time()
         thisstep = step(stepid=stepid)
         while (not stepend):
-            with pkb.Listener(on_press=on_press) as listener:
+            with pynput.keyboard.Listener(on_press=on_press) as listener:
                 listener.join()
+        stepEndTime = time.time()
+        thisstep.time = stepEndTime - stepStartTime
         print("[Step] end")
         stepid += 1
         stepend = False
     print("[Record] end")
 
 def play():
+    def on_press(key):
+        if (key == pynput.keyboard.Key.esc):
+            print("[Play] stop")
+            os._exit(0)
+    listener = pynput.keyboard.Listener(on_press=on_press)
+    listener.start()
+    
     print("[Play] start")
     for i in range(0, len(steps)):
         print(steps[i])
-        if (i-1 > 0): steps[i].run(steps[i-1])
-        else: steps[i].run(steps[i])
+        if (i-1 > 0): steps[i].run()
+        else: steps[i].run()
     print("[Play] end")
 
 def scriptWrite():
     print("[Write] start")
-    with open(scriptPath, 'w') as file:
+    with open(scriptPath, 'w', encoding='utf-8') as file:
         for i in range(0, len(steps)):
             file.write(f"{steps[i]}\n")
     print("[Write] end")
 
 def scriptRead():
     print("[Read] start")
-    with open(scriptPath, 'r') as file:
+    with open(scriptPath, 'r', encoding='utf-8') as file:
         line = "fill"
         while (line != ""):
             line = file.readline()
@@ -135,7 +146,7 @@ def scriptRead():
                 stepparams = line[3].split(",")
                 steps.append(step(
                     int(line[0]),
-                    pyautogui.Point(int(steppoint[0]), int(steppoint[1])),
+                    (int(steppoint[0]), int(steppoint[1])),
                     float(line[2]),
                     bool(int(stepparams[0])),
                     bool(int(stepparams[1])),
@@ -148,19 +159,20 @@ def scriptRead():
 
 def main():
     global loginPasswordPath, scriptPath
-    if (len(sus.argv) < 2):
-        print(f'To run: python "{sus.argv[0]}" "pathToLoginPasswordFile" "pathToScriptFile" mode\n')
+    if (len(sys.argv) < 4):
+        print(f'To run: python "{sys.argv[0]}" "pathToLoginPasswordFile" "pathToScriptFile" mode\n')
         print(f'pathToLoginPasswordFile - a path to your login:password file')
         print(f'pathToScriptFile - a path to your script file')
         print(f'mode - a mod from listed below')
         print(f'rp - record and play')
         print(f'rW - record and write')
         print(f'Rp - read and play')
+        print(f'RpL - read and play with endless loop')
     else:
-        loginPasswordPath = sus.argv[1].replace('"', '')
-        scriptPath = sus.argv[2].replace('"', '')
+        loginPasswordPath = sys.argv[1].replace('"', '')
+        scriptPath = sys.argv[2].replace('"', '')
         readLoginPasswordFile()
-        match sus.argv[3]:
+        match sys.argv[3]:
             case 'rp':
                 record()
                 play()
@@ -170,6 +182,10 @@ def main():
             case 'Rp':
                 scriptRead()
                 play()
+            case 'RpL':
+                scriptRead()
+                while (True):
+                    play()
 
 if __name__ == "__main__":
     main()
