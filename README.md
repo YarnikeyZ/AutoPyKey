@@ -19,6 +19,8 @@ It was originally conceived to automate the creation of accounts for twitch drop
      * pressing `4` - adding _writing a password_ to the step;
      * pressing `5` - adding _pressing ctrl+c_ to the step;
      * pressing `6` - adding _pressing ctrl+v_ to the step;
+     * pressing `7` - adding _pressing f11_ to the step;
+     * pressing `8` - adding _pressing alt+f4_ to the step;
    * Pressing `space` is ending the choosing of the parameters, saving the position of the cursor and ending the step;
    * Pressubg `esc` does the same but also ends the record process.
 4. When running play modes you can exit the playing sequence by pressing `esc`.
