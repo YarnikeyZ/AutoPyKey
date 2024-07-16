@@ -28,4 +28,3 @@ It was originally conceived to automate the creation of accounts for twitch drop
 ## Bonus usage
 When running in `rW` mode it writes the script to a file instead of running it, but when running in `Rp` or `RpL` modes it reads the script file and plays it.
 
-But instead of running exitsting file as is you can change it, the syntax is easy: `stepid|pointX,pointY|timeDiffInSeconds|toClickLeft,toClickRight,toWriteLogin,toWritePassword,toCopy,toPaste`.
