@@ -14,7 +14,7 @@ keyboard = pynput.keyboard.Controller()
 class step:
     def __init__(self, stepid:int = 0, point = (0,0), time:float = 0,
                  toClickLeft:bool = False, toClickRight:bool = False, toWrite1:bool = False, toWrite2:bool = False,
-                 toCopy:bool = False, toPaste:bool = False):
+                 toCopy:bool = False, toPaste:bool = False, toF11:bool = False, toAltF4:bool = False):
         self.point = point
         self.stepid = stepid
         self.time = time
@@ -24,6 +24,8 @@ class step:
         self.toWrite2 = toWrite2
         self.toCopy = toCopy
         self.toPaste = toPaste
+        self.toF11 = toF11
+        self.toAltF4 = toAltF4
     
     def run(self):
         global intline
@@ -47,12 +49,20 @@ class step:
             keyboard.press('v')
             keyboard.release(pynput.keyboard.Key.ctrl)
             keyboard.release('v')
+        if (self.toF11):
+            keyboard.press(pynput.keyboard.Key.f11)
+            keyboard.release(pynput.keyboard.Key.f11)
+        if (self.toAltF4):
+            keyboard.press(pynput.keyboard.Key.alt)
+            keyboard.press(pynput.keyboard.Key.f4)
+            keyboard.release(pynput.keyboard.Key.alt)
+            keyboard.release(pynput.keyboard.Key.f4)
         
         if (self.stepid == 0): time.sleep(1)
         else: time.sleep(self.time)
 
     def __str__(self) -> str:
-        return f"{str(self.stepid).rjust(2, " ")}|{str(self.point[0]).rjust(5, " ")},{str(self.point[1]).rjust(5, " ")}|{str(round(self.time, 3)).rjust(5, " ")}|{'1' if self.toClickLeft else '0'},{'1' if self.toClickRight else '0'},{'1' if self.toWrite1 else '0'},{'1' if self.toWrite2 else '0'},{'1' if self.toCopy else '0'},{'1' if self.toPaste else '0'}"
+        return f"{str(self.stepid).rjust(2, " ")}|{str(self.point[0]).rjust(5, " ")},{str(self.point[1]).rjust(5, " ")}|{str(round(self.time, 3)).rjust(5, " ")}|{'1' if self.toClickLeft else '0'},{'1' if self.toClickRight else '0'},{'1' if self.toWrite1 else '0'},{'1' if self.toWrite2 else '0'},{'1' if self.toCopy else '0'},{'1' if self.toPaste else '0'},{'1' if self.toF11 else '0'},{'1' if self.toAltF4 else '0'}"
 
 thisstep = step()
 
@@ -91,6 +101,10 @@ def record():
             thisstep.toCopy = True
         if (key == pynput.keyboard.KeyCode.from_char('6')):
             thisstep.toPaste = True
+        if (key == pynput.keyboard.KeyCode.from_char('7')):
+            thisstep.toF11 = True
+        if (key == pynput.keyboard.KeyCode.from_char('8')):
+            thisstep.toAltF4 = True
         return False
 
     recordrun = True
@@ -153,7 +167,9 @@ def scriptRead():
                     bool(int(stepparams[2])),
                     bool(int(stepparams[3])),
                     bool(int(stepparams[4])),
-                    bool(int(stepparams[5]))
+                    bool(int(stepparams[5])),
+                    bool(int(stepparams[6])),
+                    bool(int(stepparams[7]))
                 ))
     print("[Read] end")
 
@@ -183,9 +199,12 @@ def main():
                 scriptRead()
                 play()
             case 'RpL':
+                playCount = 0
                 scriptRead()
                 while (True):
                     play()
+                    playCount += 1
+                    print(f"Play count: {playCount}")
 
 if __name__ == "__main__":
     main()
