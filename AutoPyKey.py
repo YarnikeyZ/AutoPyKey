@@ -31,9 +31,9 @@ class step:
         global intline
         mouse.position = (self.point[0], self.point[1])
         if (self.toClickLeft):
-            mouse.click(pynput.mouse.Button.left, 2)
+            mouse.click(pynput.mouse.Button.left, 1)
         if (self.toClickRight):
-            mouse.click(pynput.mouse.Button.right, 2)
+            mouse.click(pynput.mouse.Button.right, 1)
         if (self.toWrite1):
             keyboard.type(loginPasswordLines[intline][0])
         if (self.toWrite2):
